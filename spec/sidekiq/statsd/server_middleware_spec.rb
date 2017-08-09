@@ -6,7 +6,7 @@ describe Sidekiq::Statsd::ServerMiddleware do
   let(:worker) { double "Dummy worker" }
   let(:msg)    { { 'queue' => 'mailer' } }
   let(:queue)  { nil }
-  let(:client) { double(::Statsd).as_null_object }
+  let(:client) { double(Datadog::Statsd).as_null_object }
 
   let(:worker_name) { worker.class.name.gsub("::", ".") }
 
@@ -14,11 +14,11 @@ describe Sidekiq::Statsd::ServerMiddleware do
   let(:broken_job) { ->{ raise 'error' } }
 
   before do
-    ::Statsd.stub_chain(:new, :batch).and_yield(client)
+    Datadog::Statsd.stub_chain(:new, :batch).and_yield(client)
   end
 
   it "doesn't initialize a ::Statsd client if passed-in" do
-    expect(::Statsd)
+    expect(Datadog::Statsd)
       .to receive(:new)
       .never
 
@@ -28,7 +28,7 @@ describe Sidekiq::Statsd::ServerMiddleware do
   context "with customised options" do
     describe "#new" do
       it "uses the custom statsd host and port" do
-        expect(::Statsd)
+        expect(Datadog::Statsd)
           .to receive(:new)
           .with('example.com', 8126)
           .once
