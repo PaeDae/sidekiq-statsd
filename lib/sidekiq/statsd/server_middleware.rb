@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require 'statsd'
+require 'datadog/statsd'
 
 module Sidekiq::Statsd
   ##
@@ -24,7 +24,7 @@ module Sidekiq::Statsd
                    port:           8125,
                    sidekiq_stats:  true }.merge options
 
-      @statsd = options[:statsd] || ::Statsd.new(@options[:host], @options[:port])
+      @statsd = options[:statsd] || Datadog::Statsd.new(@options[:host], @options[:port])
       @sidekiq_stats = Sidekiq::Stats.new if @options[:sidekiq_stats]
     end
 
